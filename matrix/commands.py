@@ -76,6 +76,11 @@ class WeechatCommandParser(object):
         return WeechatCommandParser._run_parser(parser, args)
 
     @staticmethod
+    def topic(args):
+        parser = WeechatArgParse(prog="names")
+        return WeechatCommandParser._run_parser(parser, args)
+
+    @staticmethod
     def kick(args):
         parser = WeechatArgParse(prog="kick")
         parser.add_argument("user_id")
@@ -262,6 +267,25 @@ def hook_commands():
         ),
         # Function name
         "matrix_command_cb",
+        "",
+    )
+
+    W.hook_command(
+        # Command name and short description
+        "names",
+        "Display names in the room",
+        # Synopsis
+        (
+            "names "
+        ),
+        # Description
+        (
+            "It just list all users in this room"
+        ),
+        # Completions
+        "",
+        # Function name
+        "matrix_names_command_cb",
         "",
     )
 
@@ -1964,5 +1988,17 @@ def matrix_cursor_reply_signal_cb(data, signal, ht):
 
         W.buffer_set(bufptr, "input", new_prefix + current_input)
         W.buffer_set(bufptr, "input_pos", str(len(new_prefix) + input_pos))
+
+    return W.WEECHAT_RC_OK
+
+
+@utf8_decode
+def matrix_names_command_cb(data, buffer, args):
+    for server in SERVERS.values():
+        if buffer in server.buffers.values():
+            room_buffer = server.find_room_from_ptr(buffer)
+            message = " ".join([room_buffer.find_nick(nick) for nick in room_buffer.displayed_nicks])
+            W.prnt("", message)
+            break
 
     return W.WEECHAT_RC_OK
