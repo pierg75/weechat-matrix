@@ -1997,8 +1997,12 @@ def matrix_names_command_cb(data, buffer, args):
     for server in SERVERS.values():
         if buffer in server.buffers.values():
             room_buffer = server.find_room_from_ptr(buffer)
-            message = " ".join([room_buffer.find_nick(nick) for nick in room_buffer.displayed_nicks])
-            W.prnt("", message)
+            short_name = W.buffer_get_string(buffer, "short_name")
+            header = "Nicks {}: [".format(short_name)
+            nick = "nick" if room_buffer.room.member_count == 1 else "nicks"
+            footer = "] Channel {} has {} {}.".format(short_name, room_buffer.room.member_count, nick)
+            message = " ".join([header, " ".join([room_buffer.find_nick(nick) for nick in room_buffer.displayed_nicks]), footer])
+            W.prnt_date_tags(W.current_buffer(), 0, "no_log", message)
             break
 
     return W.WEECHAT_RC_OK
