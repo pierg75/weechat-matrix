@@ -1067,6 +1067,7 @@ class RoomBuffer(object):
         # TODO handle this special case for discord bridge users and
         # freenode bridge users better
         if (user.user_id.startswith("@_discord_") or
+                user.user_id.startswith("@slack_") or
                 user.user_id.startswith("@_slack_") or
                 user.user_id.startswith("@_discordpuppet_") or
                 user.user_id.startswith("@_slackpuppet_") or
